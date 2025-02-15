@@ -18,7 +18,7 @@ export default function Home(){
     // asdasad
     // const url=`${pathName}`
     // console
-    router.push('/form/form1')
+    router.push('/form')
   };
   return(
     <div style={{ textAlign: "center", padding: "20px"}}>
