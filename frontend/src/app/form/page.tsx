@@ -14,7 +14,9 @@ const Form1=({next,data,setData}:{next:any,data:any,setData:any})=>{
     const nextPage= async ()=>{
         
         const values = await form.validateFields();
-            setData({...data,...values}); 
+            setData({...data,...values,
+                dateOfJoining: values.dateOfJoining ? dayjs(values.dateOfJoining).format("YYYY-MM-DD") : "",
+            }); 
             next();
     };
     const dataChange:DatePickerProps["onChange"]=(date)=>{
