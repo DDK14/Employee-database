@@ -44,4 +44,9 @@ export class EmployeeController {
   async final(@Param('draftId') draftId:number){
     return this.employeeService.final(draftId);
   }
+
+  @Post('/submit')
+  async dbpush(@Body() data:CreateEmployeeDto){
+    return this.employeeService.dbpush(data);
+  }
 }

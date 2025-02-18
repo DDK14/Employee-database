@@ -1,4 +1,5 @@
-import { IsDate, IsEmail, IsNotEmpty, IsPhoneNumber, IsString } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsDate, IsDateString, IsEmail, IsNotEmpty, IsPhoneNumber, IsString } from "class-validator";
 
 export class CreateEmployeeDto{
     @IsString()
@@ -13,9 +14,11 @@ export class CreateEmployeeDto{
     @IsNotEmpty()
     location!: string;
 
-    @IsDate()
+    @IsDateString()
     @IsNotEmpty()
-    dateOfJoining!: Date;
+    @Transform(({ value }) => value.split('T')[0])
+    // @Type(()=>Date)
+    dateOfJoining!: string;
 
     @IsString()
     @IsNotEmpty()

@@ -27,10 +27,10 @@ export class Employee extends Model<Employee>{
       location!: string;
     
       @Column({
-        type: DataType.DATE,
+        type: DataType.STRING,
         allowNull: false,
       })
-      dateOfJoining!: Date;
+      dateOfJoining!: string;
     
       @Column({
         type: DataType.STRING,

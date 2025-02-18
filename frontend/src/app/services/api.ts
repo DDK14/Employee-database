@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 const API_URL="http://localhost:3000";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,4 +13,15 @@ export const saveDraft = async (data:any,draftId?:number    ) =>{
 export const finalSubmit = async (draftId:number) =>{
     const response=await axios.post(`${API_URL}/employee/final/${draftId}`);
     return response.data;
+}
+export const dbpush= async(data:any) =>{
+    console.log("Data being sent",data)
+    try{
+        const res=await axios.post(`${API_URL}/employee/submit`,data);
+        return res.data;
+    }
+    catch(error){
+        console.error("Problem in submission",error);
+        throw error;
+    }
 }
