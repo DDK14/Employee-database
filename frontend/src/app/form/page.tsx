@@ -4,15 +4,14 @@
 import {Form,Input,Button, DatePicker} from "antd"
 import '@ant-design/v5-patch-for-react-19';
 import { useState } from "react";
-import { saveDraft } from "../services/api";
+import { finalSubmit, saveDraft } from "../services/api";
 //  console.log("form1");
-const Form1=({next,data,setData}:{next:any,data:any,setData:any})=>{
+const Form1=({next,saveData}:{next:any,saveData:any})=>{
     const [form] =Form.useForm();
     const nextPage= async ()=>{
         
         const values = await form.validateFields();
-            setData({...data, ...values});
-            await saveDraft({...data,...values}); 
+            await saveData(values); 
             next();
     };
 return(
@@ -43,13 +42,12 @@ return(
     </div>
 )
 };
-const Form2=({next,prev,data,setData}:{next:any,prev:any,data:any,setData:any})=>{
+const Form2=({next,prev,saveData}:{next:any,prev:any,saveData:any})=>{
     const [form] =Form.useForm();
     const nextPage= async ()=>{
         
         const values = await form.validateFields();
-            setData({...data, ...values});
-            await saveDraft({...data,...values}); 
+            await saveData(values); 
             next();
     };
     return(
@@ -80,12 +78,11 @@ const Form2=({next,prev,data,setData}:{next:any,prev:any,data:any,setData:any})=
 }
 
 //form3
-const Form3=({prev, submit ,data,setData}:{prev:any,submit:any ,data:any,setData:any})=>{
+const Form3=({prev, submit ,saveData}:{prev:any,submit:any ,saveData:any})=>{
     const [form] =Form.useForm();
     const submitting= async ()=>{
         const values = await form.validateFields();
-            setData({...data, ...values});
-            await saveDraft({...data,...values});
+            await saveData(values); 
             submit();
     };
     return(
@@ -117,16 +114,36 @@ const Form3=({prev, submit ,data,setData}:{prev:any,submit:any ,data:any,setData
 const Complete=()=>{
     const [step,setStep]=useState(1);      //that is initialstate=1
     const [data,setData]=useState({});      //stores all values from the form
+    const [draftId,setDraftId]=useState<number| undefined>(undefined)  //i.e it starts as undefined, but if we update it then takes number  
     const nextStep =() => setStep(step+1);
     const prevStep = () => setStep(step-1);
-    const handleSubmit = () =>{
+    const handleSaveDraft=async (value:any)=>{
+        // const res= await saveDraft({...data,...value},draftId);
+        // if(!draftId &&res.id){
+        //     console.log("New id",res.id);
+        //     setDraftId(res.id);
+        // }
+        // setData({...data,...value});
+        setData(prevData=>({...prevData,...value}));
+    }
+    const handleSubmit = async (newData:any) =>{
         console.log("Submission", data);
+        const res=await saveDraft({...data,...newData},draftId);
+        if(!draftId && res.id){
+            console.log("New id",res.id);
+            setDraftId(res.id);
+        }
+        const finalDraftId= draftId || res.id;
+        if(finalDraftId){
+            await finalSubmit(finalDraftId);
+            console.log("final submission with finalDraftId", finalDraftId);
+        }
     }
     return(
         <div>
-            {step===1 && <Form1 next={nextStep} data={data} setData={setData}/>}
-            {step===2 && <Form2 next={nextStep} prev={prevStep} data={data} setData={setData}/>}
-            {step===3 && <Form3 prev={prevStep} submit={handleSubmit} data={data} setData={setData}/>}
+            {step===1 && <Form1 next={nextStep} saveData={handleSaveDraft}/>}
+            {step===2 && <Form2 next={nextStep} prev={prevStep} saveData={handleSaveDraft}/>}
+            {step===3 && <Form3 prev={prevStep} submit={handleSubmit} saveData={handleSaveDraft}/>}
         </div>
     )
 };

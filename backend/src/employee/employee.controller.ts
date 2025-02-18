@@ -36,8 +36,9 @@ export class EmployeeController {
   //   return Employee.findAll({where: whereClause});
   // }
   @Post('/draft')
-  async saveDraft(@Body() draftData:Partial<CreateEmployeeDto>,@Query('draftId') draftId?: number){
-    return this.employeeDraftService.saveDraft(draftData,draftId);
+  async saveDraft(@Body() draftData:Partial<CreateEmployeeDto>,@Query('draftId') draftId?: string){
+    const draftNumId=draftId ? Number(draftId) :undefined;
+    return this.employeeDraftService.saveDraft(draftData,draftNumId);
   }
   @Post('/final/:draftId')
   async final(@Param('draftId') draftId:number){
