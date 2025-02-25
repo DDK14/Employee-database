@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 const API_URL="http://localhost:3000";
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const saveDraft = async (data:any,draftId?:number    ) =>{
+export const saveDraft = async (data:any,draftId?:number) =>{
     console.log("saving in draft")
 
     //if draftId present, then update that draft entry only
@@ -23,5 +22,15 @@ export const dbpush= async(data:any) =>{
     catch(error){
         console.error("Problem in submission",error);
         throw error;
+    }
+}
+
+export const deleteDraft=async(draftId?:number)=>{
+    try{
+        const response=await axios.delete(`${API_URL}/drafts/${draftId}`);
+        return response.data;
+    }
+    catch(error){
+        console.error("Error in deleting draft",error);
     }
 }

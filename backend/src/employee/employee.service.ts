@@ -53,7 +53,7 @@ export class EmployeeService {
         name:draft.name,
         proposedRole:draft.proposedRole,
         location:draft.location,
-        // dateOfJoining:draft.dateOfJoining,
+        dateOfJoining:draft.dateOfJoining,
         employeeCode:draft.employeeCode,
         personalEmail: draft.personalEmail,
         officialEmail: draft.officialEmail,

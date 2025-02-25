@@ -24,9 +24,9 @@ export class EmployeeDraft extends Model<EmployeeDraft>{
       location!: string;
     
       @Column({
-        type: DataType.DATE,
+        type: DataType.STRING,
            })
-      dateOfJoining!: Date;
+      dateOfJoining!: string;
     
       @Column({
         type: DataType.STRING,
