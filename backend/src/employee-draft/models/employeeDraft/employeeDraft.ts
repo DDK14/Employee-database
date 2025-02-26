@@ -1,4 +1,4 @@
-import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
 
 @Table
 export class EmployeeDraft extends Model<EmployeeDraft>{
@@ -27,22 +27,23 @@ export class EmployeeDraft extends Model<EmployeeDraft>{
         type: DataType.STRING,
            })
       dateOfJoining!: string;
-    
+     
+      
       @Column({
         type: DataType.STRING,
-             unique: true,
+             
       })
       employeeCode!: string;
-    
+      
       @Column({
         type: DataType.STRING,
-             unique: true,
+             
       })
       personalEmail!: string;
-    
+
       @Column({
         type: DataType.STRING,
-             unique: true,
+             
       })
       officialEmail!: string;
     

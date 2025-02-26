@@ -5,7 +5,7 @@ export const saveDraft = async (data:any,draftId?:number) =>{
     console.log("saving in draft")
 
     //if draftId present, then update that draft entry only
-    const url=draftId ? `${API_URL}/employee/draft?draft=${draftId}` : `${API_URL}/employee/draft`
+    const url=draftId ? `${API_URL}/employee/draft?draftId=${draftId}` : `${API_URL}/employee/draft`
         const response=await axios.post(url,data);
         return response.data;
 }

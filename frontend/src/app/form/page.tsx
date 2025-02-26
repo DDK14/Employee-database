@@ -150,7 +150,7 @@ const Complete=()=>{
             // }
             const res= await saveDraft(updatedValues,draftId);
                 if(res.id && !draftId){
-                    console.log("New Draft ID:" , res.id);
+                    console.log(draftId ? "Updated Draft ID:" : "New Draft ID:", res.id);
                     setDraftId(res.id);
                 }
             setData(updatedValues)

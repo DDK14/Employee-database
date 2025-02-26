@@ -37,7 +37,9 @@ export class EmployeeController {
   // }
   @Post('/draft')
   async saveDraft(@Body() draftData:Partial<CreateEmployeeDto>,@Query('draftId') draftId?: string){
+    console.log("req api with id in string", draftId)
     const draftNumId=draftId ? Number(draftId) :undefined;
+    console.log("api call with id:", draftNumId)
     return this.employeeDraftService.saveDraft(draftData,draftNumId);
   }
   @Post('/final/:draftId')
