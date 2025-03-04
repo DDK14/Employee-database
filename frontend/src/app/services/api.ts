@@ -34,3 +34,23 @@ export const deleteDraft=async(draftId?:number)=>{
         console.error("Error in deleting draft",error);
     }
 }
+
+export const getEmployees= async()=>{
+    try{
+        const res=await axios.get(`${API_URL}/employee`);
+        return res.data;
+    }
+    catch(error){
+        console.error("Error in returing the employees",error);
+    }
+}
+
+export const getEmployeeById= async(id:number)=>{
+    try{
+        const res= await axios.get(`${API_URL}/employee/${id}`);
+        return res.data;
+    }
+    catch(error){
+        console.error(`error in fetching employee with id: ${id}`, error)
+    }
+}

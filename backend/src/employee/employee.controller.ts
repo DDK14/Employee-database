@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { Employee } from './models/employee/employee';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -6,6 +6,7 @@ import { Op, where } from 'sequelize';
 import { EmployeeDraftService } from 'src/employee-draft/employee-draft.service';
 @Controller('employee')
 export class EmployeeController {
+  private readonly logger= new Logger(EmployeeController.name);
     constructor(private readonly employeeService:EmployeeService,
       private readonly employeeDraftService:EmployeeDraftService,
     ){}
@@ -17,11 +18,13 @@ export class EmployeeController {
 
     @Get()
     async findAll() {
+    this.logger.log('Fetching all employees')
     return this.employeeService.findAll();
   }
 
   @Get(':id')
   async findEmployeeById(@Param('id') id: number) {
+    this.logger.debug('Fetching employee by id: ${id}')
     return this.employeeService.findEmployeeById(id);
   }
 
@@ -40,6 +43,7 @@ export class EmployeeController {
     console.log("req api with id in string", draftId)
     const draftNumId=draftId ? Number(draftId) :undefined;
     console.log("api call with id:", draftNumId)
+    this.logger.debug('Saving draft with id: ${draftId}')
     return this.employeeDraftService.saveDraft(draftData,draftNumId);
   }
   @Post('/final/:draftId')
@@ -49,6 +53,7 @@ export class EmployeeController {
 
   @Post('/submit')
   async dbpush(@Body() data:CreateEmployeeDto){
+    this.logger.debug('Final submit to the database')
     return this.employeeService.dbpush(data);
   }
 }
