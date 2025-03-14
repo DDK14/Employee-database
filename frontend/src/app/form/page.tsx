@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import {Form,Input,Button, DatePicker, message, DatePickerProps} from "antd"
+import {Form,Input,Button, DatePicker, message, DatePickerProps, Card, Descriptions} from "antd"
 import '@ant-design/v5-patch-for-react-19';
 import { useEffect, useState } from "react";
 import { dbpush, deleteDraft, getEmployeeById, saveDraft } from "../services/api";
 import dayjs, { Dayjs } from "dayjs";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+
+const formCardStyle = { maxWidth: "500px", margin: "0 auto", padding: "20px", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" };
+const buttonStyle = { margin: "10px" };
 
 const Form1=({next, form ,data,setData,draft}:{next:any,form:any,data:any,setData:any,draft:any})=>{
     // const [form] =Form.useForm();
@@ -21,8 +24,7 @@ const Form1=({next, form ,data,setData,draft}:{next:any,form:any,data:any,setDat
     };
    
 return(
-    <div className="bg-white text-black">
-        <h2>Enter the details</h2>
+    <Card title="Enter the employee details" style={formCardStyle}>
         <Form form={form} layout="vertical">
             <Form.Item label="Name" name={"name"} rules={[{ required: true, message: 'Please input your name!' }]}>
                 <Input/>
@@ -43,10 +45,13 @@ return(
             <Form.Item label="Employee Code" name="employeeCode" rules={[{ required: true, message: 'Please input employee code!' }]}>
                 <Input />
             </Form.Item>
-            <Button type="primary" onClick={nextPage} >Next</Button>
-            <Button variant="outlined" color="danger" onClick={draft} style={{ marginLeft: 15 }}>Save & Continue</Button>
+            <div style={{textAlign:"right"}}>
+                <Button type="primary" onClick={nextPage} style={buttonStyle} >Next</Button>
+                <Button variant="outlined" color="danger" onClick={draft} style={buttonStyle}>Save & Continue</Button>
+            </div>
+            
         </Form>
-    </div>
+    </Card>
 )
 };
 const Form2=({next,prev,form, data,setData,draft}:{next:any,prev:any,form:any,data:any,setData:any,draft:any})=>{
@@ -58,8 +63,7 @@ const Form2=({next,prev,form, data,setData,draft}:{next:any,prev:any,form:any,da
             next();
     };
     return(
-        <div className="bg-white text-black">
-        <h2>Page 2</h2>
+        <Card title="Enter contact information" style={formCardStyle}>
         <Form form={form} layout="vertical">
             <Form.Item label="Personal Email" name="personalEmail" rules={[{ required: true, type: 'email', message: 'Please input a valid email!' }]}>
                 <Input />
@@ -88,11 +92,14 @@ const Form2=({next,prev,form, data,setData,draft}:{next:any,prev:any,form:any,da
                 <Input maxLength={10}/>
             </Form.Item>
             
-            <Button type="dashed" onClick={prev}>Back</Button>
-            <Button type="primary" onClick={nextPage}>Next</Button>
-            <Button variant="outlined" color="danger" onClick={draft} style={{ marginLeft: 15 }}>Save & Continue</Button>
+            <div style={{textAlign:"right"}}>
+            <Button type="dashed" onClick={prev} style={buttonStyle}>Back</Button>
+            <Button type="primary" onClick={nextPage} style={buttonStyle}>Next</Button>
+            <Button variant="outlined" color="danger" onClick={draft} style={buttonStyle}>Save & Continue</Button>
+            </div>
+           
         </Form>
-    </div>
+        </Card>
     )
 }
 
@@ -104,8 +111,7 @@ const Form3=({prev, next , form ,data,setData, draft}:{prev:any,next:any ,form:a
             next();
     };
     return(
-        <div className="bg-white text-black">
-        <h2>Page 3</h2>
+        <Card title="Job details" style={formCardStyle}>
         <Form form={form} layout="vertical">
             <Form.Item label="Business Unit" name="businessUnit" rules={[{ required: true, message: 'Please input business unit!' }]}>
                 <Input/>
@@ -119,21 +125,38 @@ const Form3=({prev, next , form ,data,setData, draft}:{prev:any,next:any ,form:a
                 <Input/>
             </Form.Item>
 
-            <Button type="dashed" onClick={prev}>Back</Button>
-            <Button type="primary" onClick={nextPage}>Next</Button>
-            <Button variant="outlined" color="danger" onClick={draft} style={{ marginLeft: 15 }}>Save & Continue</Button>
+            <div style={{textAlign:"right"}}>
+            <Button type="dashed" onClick={prev} style={buttonStyle}>Back</Button>
+            <Button type="primary" onClick={nextPage} style={buttonStyle}>Next</Button>
+            <Button variant="outlined" color="danger" onClick={draft} style={buttonStyle}>Save & Continue</Button>
+            </div>
         </Form>
-    </div>
+        </Card>
     )
 }
 
 const SubmitPage=({data,submit,}:{data:any; submit:any})=>{
     return(
-        <div>
-            <h2>Final  review</h2>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
-            <Button type="primary" onClick={submit}>Submit</Button>
-        </div>
+        <Card title="Final Review" className="bg-white text-black shadow-lg p-5">
+            <Descriptions bordered column={2} layout="vertical">
+                <Descriptions.Item label="Name">{data.name}</Descriptions.Item>
+                <Descriptions.Item label="Proposed Role">{data.proposedRole}</Descriptions.Item>
+                <Descriptions.Item label="Location">{data.location}</Descriptions.Item>
+                <Descriptions.Item label="Date of Joining">{data.dateOfJoining}</Descriptions.Item>
+                <Descriptions.Item label="Employee Code">{data.employeeCode}</Descriptions.Item>
+                <Descriptions.Item label="Personal Email">{data.personalEmail}</Descriptions.Item>
+                <Descriptions.Item label="Official Email">{data.officialEmail}</Descriptions.Item>
+                <Descriptions.Item label="Contact Number">{data.contactNumber}</Descriptions.Item>
+                <Descriptions.Item label="Emergency Contact">{data.emergencyContactNumber}</Descriptions.Item>
+                <Descriptions.Item label="Business Unit">{data.businessUnit}</Descriptions.Item>
+                <Descriptions.Item label="Department">{data.department}</Descriptions.Item>
+                <Descriptions.Item label="Reporting Manager">{data.reportingManager}</Descriptions.Item>
+            </Descriptions>
+
+            <div className="flex justify-end mt-4">
+                <Button type="primary" onClick={submit}>Submit</Button>
+            </div>
+        </Card>
     )
 }
 
@@ -244,7 +267,7 @@ const Complete=()=>{
         // }
     }
     return(
-        <div>
+        <div className="container mx-auto p-4 ">
             {step===1 && <Form1 next={nextStep} form={form} data={data} setData={setData} draft={handleSaveDraft}/>}
             {step===2 && <Form2 next={nextStep} form={form} prev={prevStep} data={data} setData={setData} draft={handleSaveDraft}/>}
             {step===3 && <Form3 prev={prevStep} form={form} next={nextStep} data={data} setData={setData} draft={handleSaveDraft}/>}

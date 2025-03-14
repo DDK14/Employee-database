@@ -21,12 +21,14 @@ export default function Home(){
     router.push('/form')
   };
   return(
-    <div style={{ textAlign: "center", padding: "20px"}}>
-      <h1>Welcome</h1>
-      <p>Click below to start filling the form</p>
-      <Button type="primary"onClick={starting}>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+      <div className="bg-white shadow-lg rounded-2xl p-10 text-center max-w-md">
+      <h1 className="text-4xl font-bold text-gray-800 mb-4">Welcome</h1>
+      <p className="text-lg text-gray-600 mb-6">Click below to start filling the form</p>
+      <Button type="primary"onClick={starting} className="px-6 py-2 text-lg bg-blue-500 hover:bg-blue-600 transition-all duration-300"  >
         Start Form
       </Button>
+      </div>
     </div>
   );
 };
