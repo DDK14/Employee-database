@@ -267,7 +267,7 @@ const Complete=()=>{
         // }
     }
     return(
-        <div className="container mx-auto p-4 ">
+        <div className="bg-gray-100 min-h-screen p-6">  
             {step===1 && <Form1 next={nextStep} form={form} data={data} setData={setData} draft={handleSaveDraft}/>}
             {step===2 && <Form2 next={nextStep} form={form} prev={prevStep} data={data} setData={setData} draft={handleSaveDraft}/>}
             {step===3 && <Form3 prev={prevStep} form={form} next={nextStep} data={data} setData={setData} draft={handleSaveDraft}/>}

@@ -41,7 +41,7 @@ const EmployeeList = () =>{
     const columns:ColumnsType<Employee>=[
         {title:"Name", dataIndex:"name", key:"name"},
         {title:"Department", dataIndex:"department", key:"department"},
-        {title:"Reporting Manager" , dataIndex:"reportingManageer",key:"reportingManageer"},
+        {title:"Reporting Manager" , dataIndex:"reportingManager",key:"reportingManager"},
         {
             title:"Actions",
             key:"actions",
@@ -54,9 +54,16 @@ const EmployeeList = () =>{
     ];
 
     return(
-        <div className="bg-white text-black p-4">
-            <h2>Employee List</h2>
+        <div  className="bg-gray-100 min-h-screen p-6">
+            {/* Navbar */}
+            <div className="bg-white shadow-md p-4 flex justify-between items-center mb-4 rounded-lg">
+                <h2 className="text-xl font-bold text-black">Employee List</h2>
+                <Button type="default" onClick={() => router.push("/form")}>Back to Form</Button>
+            </div>
+            <div className="bg-white shadow-md p-6 rounded-lg">
             <Table columns={columns} dataSource={employee} loading={loading} rowKey={"id"}/>
+            </div>
+            
         </div>
     )
 

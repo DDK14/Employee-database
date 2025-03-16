@@ -10,18 +10,21 @@ export class EmployeeService {
     constructor(@InjectModel(Employee) private readonly employeeModel:typeof Employee,
                 @InjectModel(EmployeeDraft) private readonly draftModel:typeof EmployeeDraft,
               ){}  
-    // async createEmployee(data:Partial<Employee>){
-    //     return this.employeeModel.create(data);
-    // }
+
+    //to fetch all employees
     async findAll(){
       this.logger.log('Fetching all employees from db')
         return this.employeeModel.findAll();
     }
+
+    //to fetch employee by id
     async findEmployeeById(id:number){
 
         return this.employeeModel.findByPk(id);
     }
     
+
+    //to submit api
     async dbpush(data:CreateEmployeeDto){
       try{
       if(
@@ -32,7 +35,12 @@ export class EmployeeService {
         this.logger.error('Failed to save due to missing fields')
         throw new Error('Incomplete data. Please fill all required fields.');
       }
-      return await this.employeeModel.create(data);}
+      const employee= await this.employeeModel.upsert(data,{
+        conflictFields:['id'],
+      });
+      return employee;
+    }
+
       catch(error){
         console.error("Database error:", error);
         this.logger.error('Database error')
@@ -40,6 +48,8 @@ export class EmployeeService {
       }
     }
 
+
+    //no use
     async final(draftId:number){
         const draft=await this.draftModel.findByPk(draftId);
         if(!draft){
