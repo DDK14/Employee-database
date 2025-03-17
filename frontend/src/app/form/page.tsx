@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import {Form,Input,Button, DatePicker, message, DatePickerProps, Card, Descriptions} from "antd"
+import {Form,Input,Button, DatePicker, message, DatePickerProps, Card, Descriptions, Modal} from "antd"
 import '@ant-design/v5-patch-for-react-19';
 import { useEffect, useState } from "react";
 import { dbpush, deleteDraft, getEmployeeById, saveDraft } from "../services/api";
@@ -222,6 +222,50 @@ const Complete=()=>{
         }
     }
 
+    
+
+const showExitPrompt = () => {
+    Modal.confirm({
+        title: "Unsaved Changes",
+        content: "You have unsaved progress. Do you want to save before leaving?",
+        okText: "Save",
+        cancelText: "Leave",
+        onOk: () => {
+            handleSaveDraft(); // Call your draft-saving function
+        },
+        onCancel: () => {
+            window.removeEventListener("beforeunload", beforeUnloadHandler);
+        }
+    });
+};
+
+const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
+    event.preventDefault();
+    // event.returnValue = ""; // This triggers the browser warning
+    showExitPrompt();
+};
+
+useEffect(() => {
+    window.addEventListener("beforeunload", beforeUnloadHandler);
+    return () => window.removeEventListener("beforeunload", beforeUnloadHandler);
+});
+
+    // useEffect(() => {
+    //     const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
+    //         if (Object.keys(data).length > 0 && !employeeId) {  
+    //             event.preventDefault();
+    //             // await handleSaveDraft();
+    //             // event.returnValue = "You have unsaved changes. Do you want to save before exiting?";
+    //         }
+    //     };
+    
+    //     window.addEventListener("beforeunload", handleBeforeUnload);
+        
+    //     return () => {
+    //         window.removeEventListener("beforeunload", handleBeforeUnload);
+    //     };
+    // }, [data, employeeId]);
+    
 
     const handleSubmit = async () =>{
         console.log("Submission", data);
@@ -233,13 +277,6 @@ const Complete=()=>{
             }
             await dbpush(finalData);
             message.success(employeeId?"Employee details updated successfully" : "Form submitted");
-            // if(employeeId){
-            //     await dbpush(finalData)
-            //     message.success("Employee details updated successfully");
-            // }else{
-            //     await dbpush({...data});
-            //     message.success("form Submitted")
-            // }
             if(draftId){
                 await deleteDraft(draftId);
                 console.log("draft Deleted after final submission");
@@ -255,16 +292,6 @@ const Complete=()=>{
         }finally{
             setLoading(false)
         }
-        // const res=await saveDraft({...data,...newData},draftId);
-        // if(!draftId && res.id){
-        //     console.log("New id",res.id);
-        //     setDraftId(res.id);
-        // }
-        // const finalDraftId= draftId || res.id;
-        // if(finalDraftId){
-        //     await finalSubmit(finalDraftId);
-        //     console.log("final submission with finalDraftId", finalDraftId);
-        // }
     }
     return(
         <div className="bg-gray-100 min-h-screen p-6">  
