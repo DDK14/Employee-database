@@ -1,4 +1,4 @@
-import { Controller, Delete, Param} from '@nestjs/common';
+import { Controller, Delete, Get, Param} from '@nestjs/common';
 import { EmployeeDraftService } from './employee-draft.service';
 
 
@@ -8,5 +8,11 @@ export class EmployeeDraftController {
   @Delete(':draftId')
   async deleteDraft(@Param('draftId') draftId:number){
     return this.employeeDraftService.deleteDraft(draftId);
+  }
+
+  @Get()
+  async findDrafts(){
+    // this.logger.log("Fetching all drafts")
+    return this.employeeDraftService.getDrafts();
   }
 }

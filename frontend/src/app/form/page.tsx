@@ -224,31 +224,31 @@ const Complete=()=>{
 
     
 
-const showExitPrompt = () => {
-    Modal.confirm({
-        title: "Unsaved Changes",
-        content: "You have unsaved progress. Do you want to save before leaving?",
-        okText: "Save",
-        cancelText: "Leave",
-        onOk: () => {
-            handleSaveDraft(); // Call your draft-saving function
-        },
-        onCancel: () => {
-            window.removeEventListener("beforeunload", beforeUnloadHandler);
-        }
-    });
-};
+// const showExitPrompt = () => {
+//     Modal.confirm({
+//         title: "Unsaved Changes",
+//         content: "You have unsaved progress. Do you want to save before leaving?",
+//         okText: "Save",
+//         cancelText: "Leave",
+//         onOk: () => {
+//             handleSaveDraft(); // Call your draft-saving function
+//         },
+//         onCancel: () => {
+//             window.removeEventListener("beforeunload", beforeUnloadHandler);
+//         }
+//     });
+// };
 
-const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
-    event.preventDefault();
-    // event.returnValue = ""; // This triggers the browser warning
-    showExitPrompt();
-};
+// const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
+//     event.preventDefault();
+//     // event.returnValue = ""; // This triggers the browser warning
+//     showExitPrompt();
+// };
 
-useEffect(() => {
-    window.addEventListener("beforeunload", beforeUnloadHandler);
-    return () => window.removeEventListener("beforeunload", beforeUnloadHandler);
-});
+// useEffect(() => {
+//     window.addEventListener("beforeunload", beforeUnloadHandler);
+//     return () => window.removeEventListener("beforeunload", beforeUnloadHandler);
+// });
 
     // useEffect(() => {
     //     const handleBeforeUnload = async (event: BeforeUnloadEvent) => {

@@ -47,5 +47,8 @@ export class EmployeeDraftService {
     await draft.destroy();
     return {message:'Draft deleted successfully'};
   }
-
+  async getDrafts(){
+    // this.logger.log('Fetching all employees from db')
+    return this.draftModel.findAll();
+  }
 }
