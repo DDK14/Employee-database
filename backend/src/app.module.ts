@@ -9,7 +9,7 @@ import { EmployeeDraftModule } from './employee-draft/employee-draft.module';
 @Module({
   imports: [SequelizeModule.forRoot({
     dialect: 'postgres',
-    host: 'localhost',
+    host: '172.17.71.181',
     port: 5432,
     username: 'admin',
     password: 'admin',

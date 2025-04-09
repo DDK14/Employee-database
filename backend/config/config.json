@@ -3,21 +3,21 @@
     "username": "admin",
     "password": "admin",
     "database": "emp_db",
-    "host": "127.0.0.1",
+    "host": "172.17.71.181",
     "dialect": "postgres"
   },
   "test": {
     "username": "admin",
     "password": "admin",
     "database": "emp_db",
-    "host": "127.0.0.1",
+    "host": "172.17.71.181",
     "dialect": "postgres"
   },
   "production": {
     "username": "admin",
     "password": "admin",
     "database": "emp_db",
-    "host": "127.0.0.1",
+    "host": "172.17.71.181",
     "dialect": "postgres"
   }
 }
