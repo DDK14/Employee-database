@@ -36,7 +36,7 @@ export class EmployeeDraftService {
     console.log(newDraft?"created new draft with id":"updated with id",draft.id);
     return draft;
 }
-  async findDraft(draftId:number){
+  async getDraftsById(draftId:number){
     return this.draftModel.findByPk(draftId);
   }
   async deleteDraft(draftId:number){

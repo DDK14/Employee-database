@@ -58,7 +58,14 @@ const EmployeeList = () =>{
             {/* Navbar */}
             <div className="bg-white shadow-md p-4 flex justify-between items-center mb-4 rounded-lg">
                 <h2 className="text-xl font-bold text-black">Employee List</h2>
-                <Button type="default" onClick={() => router.push("/form")}>Back to Form</Button>
+                <div className="flex gap-2">
+                <Button type="default" onClick={() => router.push("/form")}>
+                Back to Form
+                </Button>
+                <Button type="primary" onClick={() => router.push("/list/draft-list")}>
+                Draft List
+                </Button>
+            </div>    
             </div>
             <div className="bg-white shadow-md p-6 rounded-lg">
             <Table columns={columns} dataSource={employee} loading={loading} rowKey={"id"}/>

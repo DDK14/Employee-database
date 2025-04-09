@@ -4,7 +4,7 @@
 import {Form,Input,Button, DatePicker, message, DatePickerProps, Card, Descriptions, Modal} from "antd"
 import '@ant-design/v5-patch-for-react-19';
 import { useEffect, useState } from "react";
-import { dbpush, deleteDraft, getEmployeeById, saveDraft } from "../services/api";
+import { dbpush, deleteDraft, getDraftsById, getEmployeeById, saveDraft } from "../services/api";
 import dayjs, { Dayjs } from "dayjs";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 const formCardStyle = { maxWidth: "500px", margin: "0 auto", padding: "20px", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" };
 const buttonStyle = { margin: "10px" };
 
-const Form1=({next, form ,data,setData,draft}:{next:any,form:any,data:any,setData:any,draft:any})=>{
+const Form1=({next, form ,data,setData,draft,saveExit}:{next:any,form:any,data:any,setData:any,draft:any, saveExit:any})=>{
     // const [form] =Form.useForm();
     const nextPage= async ()=>{
         
@@ -48,13 +48,16 @@ return(
             <div style={{textAlign:"right"}}>
                 <Button type="primary" onClick={nextPage} style={buttonStyle} >Next</Button>
                 <Button variant="outlined" color="danger" onClick={draft} style={buttonStyle}>Save & Continue</Button>
+               
             </div>
-            
+            <div style={{textAlign:"center", marginTop:30}}>
+            <Button type="primary" danger onClick={saveExit} style={buttonStyle}>Save & Exit</Button>
+            </div>
         </Form>
     </Card>
 )
 };
-const Form2=({next,prev,form, data,setData,draft}:{next:any,prev:any,form:any,data:any,setData:any,draft:any})=>{
+const Form2=({next,prev,form, data,setData,draft,saveExit}:{next:any,prev:any,form:any,data:any,setData:any,draft:any,saveExit:any})=>{
 
     const nextPage= async ()=>{
         
@@ -96,6 +99,10 @@ const Form2=({next,prev,form, data,setData,draft}:{next:any,prev:any,form:any,da
             <Button type="dashed" onClick={prev} style={buttonStyle}>Back</Button>
             <Button type="primary" onClick={nextPage} style={buttonStyle}>Next</Button>
             <Button variant="outlined" color="danger" onClick={draft} style={buttonStyle}>Save & Continue</Button>
+            
+            </div>
+            <div style={{textAlign:"center", marginTop:30}}>
+            <Button type="primary" danger onClick={saveExit} style={buttonStyle}>Save & Exit</Button>
             </div>
            
         </Form>
@@ -104,7 +111,7 @@ const Form2=({next,prev,form, data,setData,draft}:{next:any,prev:any,form:any,da
 }
 
 //form3
-const Form3=({prev, next , form ,data,setData, draft}:{prev:any,next:any ,form:any,data:any    ,setData:any,draft:any})=>{
+const Form3=({prev, next , form ,data,setData, draft, saveExit}:{prev:any,next:any ,form:any,data:any    ,setData:any,draft:any,saveExit:any})=>{
     const nextPage= async ()=>{
         const values = await form.validateFields();
             setData({...data,...values}); 
@@ -129,6 +136,9 @@ const Form3=({prev, next , form ,data,setData, draft}:{prev:any,next:any ,form:a
             <Button type="dashed" onClick={prev} style={buttonStyle}>Back</Button>
             <Button type="primary" onClick={nextPage} style={buttonStyle}>Next</Button>
             <Button variant="outlined" color="danger" onClick={draft} style={buttonStyle}>Save & Continue</Button>
+            </div>
+            <div style={{textAlign:"center", marginTop:30}}>
+            <Button type="primary" danger onClick={saveExit} style={buttonStyle}>Save & Exit</Button>
             </div>
         </Form>
         </Card>
@@ -174,26 +184,37 @@ const Complete=()=>{
     const [form] =Form.useForm();
     const [loading,setLoading]=useState(false);
     const router=useRouter();
-
+    const draftFormId=searchParams.get("draftId");
     useEffect(()=>{
-        if(employeeId){
             const fetchEmployee= async()=>{
                 try{
+                    if(employeeId){
                     const employeeData=await getEmployeeById(Number(employeeId));
                     setData(employeeData);
                     form.setFieldsValue({
                         ...employeeData,
                         dateOfJoining: employeeData.dateOfJoining ? dayjs(employeeData.dateOfJoining) : null,
-                    })
+                    })}
+                    else if(draftFormId){
+                        const draftData=await getDraftsById(Number(draftFormId));
+                        setDraftId(Number(draftData))
+                        setData(draftData)
+                        form.setFieldsValue({
+                            ...draftData,
+                            dateOfJoining: draftData.dateOfJoining ? dayjs(draftData.dateOfJoining) : null,
+                        })
+                    }
                 }catch(error){
                     console.error("Failed to fetch employee details",error);
                 }
-            }
+            
             fetchEmployee();
         }
         
-    },[employeeId,form]);
+    },[employeeId,draftFormId,form]);
 
+
+    //to save draft and continue to next page
     const handleSaveDraft=async ()=>{
         try{
             console.log("before draftid",draftId)
@@ -266,7 +287,31 @@ const Complete=()=>{
     //     };
     // }, [data, employeeId]);
     
+    //to save & exit
+    const handleSaveAndExit= async () =>{
+        try{
+            const values=await form.validateFields();
+            const updatedValues={
+                ...data,
+                ...values,
+            }
+            const res=await saveDraft(updatedValues,draftId|| (employeeId? Number(employeeId):undefined));
+            if(res.id && !draftId){
+                setDraftId(res.id);
+            }
+            message.success("Draft saved successfully. Redirecting...")
+            router.push("/list");
+        }
+        catch(error){
+            message.error("Failed to save & exit")
+            console.error("Error in save & exit", error);
+        }
+    }
 
+
+
+
+    // to submit the final data to the main db and delete that draft
     const handleSubmit = async () =>{
         console.log("Submission", data);
         setLoading(true);
@@ -295,9 +340,9 @@ const Complete=()=>{
     }
     return(
         <div className="bg-gray-100 min-h-screen p-6">  
-            {step===1 && <Form1 next={nextStep} form={form} data={data} setData={setData} draft={handleSaveDraft}/>}
-            {step===2 && <Form2 next={nextStep} form={form} prev={prevStep} data={data} setData={setData} draft={handleSaveDraft}/>}
-            {step===3 && <Form3 prev={prevStep} form={form} next={nextStep} data={data} setData={setData} draft={handleSaveDraft}/>}
+            {step===1 && <Form1 next={nextStep} form={form} data={data} setData={setData} draft={handleSaveDraft} saveExit={handleSaveAndExit}/>}
+            {step===2 && <Form2 next={nextStep} form={form} prev={prevStep} data={data} setData={setData} draft={handleSaveDraft} saveExit={handleSaveAndExit}/>}
+            {step===3 && <Form3 prev={prevStep} form={form} next={nextStep} data={data} setData={setData} draft={handleSaveDraft} saveExit={handleSaveAndExit}/>}
             {step===4 && <SubmitPage data={data} submit={handleSubmit}/>}
         </div>
     )

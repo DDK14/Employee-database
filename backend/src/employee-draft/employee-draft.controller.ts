@@ -15,4 +15,9 @@ export class EmployeeDraftController {
     // this.logger.log("Fetching all drafts")
     return this.employeeDraftService.getDrafts();
   }
+
+  @Get(':draftId')
+  async findDraftsById(@Param('draftId') draftId:number){
+    return this.employeeDraftService.getDraftsById(draftId);
+  }
 }

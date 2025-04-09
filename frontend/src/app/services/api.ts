@@ -54,3 +54,23 @@ export const getEmployeeById= async(id:number)=>{
         console.error(`error in fetching employee with id: ${id}`, error)
     }
 }
+
+export const getDrafts= async() =>{
+    try{
+        const res=await axios.get(`${API_URL}/drafts`);
+        return res.data;
+    }
+    catch(error){
+        console.error(`error in fetching drafts`,error)
+    }
+}
+
+export const getDraftsById = async(draftId:number)=>{
+    try{
+        const res=await axios.get(`${API_URL}/drafts/${draftId}`);
+        return res.data;
+    }
+    catch(error){
+        console.error(`error in fetching draft with draftId: ${draftId}`,error);
+    }
+}
