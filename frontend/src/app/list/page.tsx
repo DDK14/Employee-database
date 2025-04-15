@@ -19,11 +19,13 @@ const EmployeeList = () =>{
     const[loading,setLoading]=useState(false);
     const router=useRouter();
     useEffect(()=>{
-        const fetchEmployee= async()=>{
+        const fetchEmployeeById= async()=>{
             setLoading(true);
             try{
+                console.log("hello")
                 const data=await getEmployees();
                 setEmployee(data);
+                console.log("fetching employee data: ",data)
             }
             catch(error){
                 message.error('Failed to fetch Employees')
@@ -33,7 +35,7 @@ const EmployeeList = () =>{
                 setLoading(false);
             }
         }
-        fetchEmployee();
+        fetchEmployeeById();
     },[])
     // const handleEdit=(id:number)=>{
     //     route.push(`/form?id=${id}`)

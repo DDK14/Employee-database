@@ -50,8 +50,8 @@ return(
                 <Button variant="outlined" color="danger" onClick={draft} style={buttonStyle}>Save & Continue</Button>
                
             </div>
-            <div style={{textAlign:"center", marginTop:30}}>
-            <Button type="primary" danger onClick={saveExit} style={buttonStyle}>Save & Exit</Button>
+            <div style={{textAlign:"center", marginTop:5}}>
+            <Button type="primary" danger onClick={saveExit} style={buttonStyle}>Exit</Button>
             </div>
         </Form>
     </Card>
@@ -101,8 +101,8 @@ const Form2=({next,prev,form, data,setData,draft,saveExit}:{next:any,prev:any,fo
             <Button variant="outlined" color="danger" onClick={draft} style={buttonStyle}>Save & Continue</Button>
             
             </div>
-            <div style={{textAlign:"center", marginTop:30}}>
-            <Button type="primary" danger onClick={saveExit} style={buttonStyle}>Save & Exit</Button>
+            <div style={{textAlign:"center", marginTop:5}}>
+            <Button type="primary" danger onClick={saveExit} style={buttonStyle}>Exit</Button>
             </div>
            
         </Form>
@@ -137,8 +137,8 @@ const Form3=({prev, next , form ,data,setData, draft, saveExit}:{prev:any,next:a
             <Button type="primary" onClick={nextPage} style={buttonStyle}>Next</Button>
             <Button variant="outlined" color="danger" onClick={draft} style={buttonStyle}>Save & Continue</Button>
             </div>
-            <div style={{textAlign:"center", marginTop:30}}>
-            <Button type="primary" danger onClick={saveExit} style={buttonStyle}>Save & Exit</Button>
+            <div style={{textAlign:"center", marginTop:5}}>
+            <Button type="primary" danger onClick={saveExit} style={buttonStyle}>Exit</Button>
             </div>
         </Form>
         </Card>
@@ -186,11 +186,16 @@ const Complete=()=>{
     const router=useRouter();
     const draftFormId=searchParams.get("draftId");
     useEffect(()=>{
+        console.log("Query Params -> id:", employeeId, "draftId:", draftFormId);
+
             const fetchEmployee= async()=>{
+                console.log("getempl")
                 try{
                     if(employeeId){
+                        console.log("gfaisnoda")
                     const employeeData=await getEmployeeById(Number(employeeId));
                     setData(employeeData);
+                    console.log("try to fill form",employeeData)
                     form.setFieldsValue({
                         ...employeeData,
                         dateOfJoining: employeeData.dateOfJoining ? dayjs(employeeData.dateOfJoining) : null,
@@ -208,10 +213,28 @@ const Complete=()=>{
                     console.error("Failed to fetch employee details",error);
                 }
             
-            fetchEmployee();
+            
         }
+        fetchEmployee();
         
     },[employeeId,draftFormId,form]);
+
+
+// exit prompt
+    const handleExitPrompt= async ()=>{
+        Modal.confirm({
+            title:'Do you want to save before leaving?',
+            content:'You have unsaved data. Would you like to save it as draft before leaving?',
+            okText:'Yes, Save draft',
+            cancelText:'No, Exit without Saving',
+            onOk: async()=>{
+                await handleSaveAndExit();
+            },
+            onCancel:()=>{
+                router.push('/list');
+            }
+        })
+    }
 
 
     //to save draft and continue to next page
@@ -243,50 +266,8 @@ const Complete=()=>{
         }
     }
 
-    
 
-// const showExitPrompt = () => {
-//     Modal.confirm({
-//         title: "Unsaved Changes",
-//         content: "You have unsaved progress. Do you want to save before leaving?",
-//         okText: "Save",
-//         cancelText: "Leave",
-//         onOk: () => {
-//             handleSaveDraft(); // Call your draft-saving function
-//         },
-//         onCancel: () => {
-//             window.removeEventListener("beforeunload", beforeUnloadHandler);
-//         }
-//     });
-// };
 
-// const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
-//     event.preventDefault();
-//     // event.returnValue = ""; // This triggers the browser warning
-//     showExitPrompt();
-// };
-
-// useEffect(() => {
-//     window.addEventListener("beforeunload", beforeUnloadHandler);
-//     return () => window.removeEventListener("beforeunload", beforeUnloadHandler);
-// });
-
-    // useEffect(() => {
-    //     const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
-    //         if (Object.keys(data).length > 0 && !employeeId) {  
-    //             event.preventDefault();
-    //             // await handleSaveDraft();
-    //             // event.returnValue = "You have unsaved changes. Do you want to save before exiting?";
-    //         }
-    //     };
-    
-    //     window.addEventListener("beforeunload", handleBeforeUnload);
-        
-    //     return () => {
-    //         window.removeEventListener("beforeunload", handleBeforeUnload);
-    //     };
-    // }, [data, employeeId]);
-    
     //to save & exit
     const handleSaveAndExit= async () =>{
         try{
@@ -340,9 +321,9 @@ const Complete=()=>{
     }
     return(
         <div className="bg-gray-100 min-h-screen p-6">  
-            {step===1 && <Form1 next={nextStep} form={form} data={data} setData={setData} draft={handleSaveDraft} saveExit={handleSaveAndExit}/>}
-            {step===2 && <Form2 next={nextStep} form={form} prev={prevStep} data={data} setData={setData} draft={handleSaveDraft} saveExit={handleSaveAndExit}/>}
-            {step===3 && <Form3 prev={prevStep} form={form} next={nextStep} data={data} setData={setData} draft={handleSaveDraft} saveExit={handleSaveAndExit}/>}
+            {step===1 && <Form1 next={nextStep} form={form} data={data} setData={setData} draft={handleSaveDraft} saveExit={handleExitPrompt}/>}
+            {step===2 && <Form2 next={nextStep} form={form} prev={prevStep} data={data} setData={setData} draft={handleSaveDraft} saveExit={handleExitPrompt}/>}
+            {step===3 && <Form3 prev={prevStep} form={form} next={nextStep} data={data} setData={setData} draft={handleSaveDraft} saveExit={handleExitPrompt}/>}
             {step===4 && <SubmitPage data={data} submit={handleSubmit}/>}
         </div>
     )

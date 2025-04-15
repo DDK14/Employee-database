@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { deleteDraft, getDrafts } from "@/app/services/api";
@@ -35,7 +36,7 @@ const DraftList=() =>{
             {
                 title:"Actions",
                 key:"actions",
-                render:(record):React.ReactNode=>{
+                render:(_: any,record: any):React.ReactNode=>{
                     return (
                         <div className="flex gap-3">
                     <Button type="primary" onClick={() => router.push(`/form?draftId=${record.id}`)}>
