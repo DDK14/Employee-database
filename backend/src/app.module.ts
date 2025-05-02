@@ -5,6 +5,9 @@ import { EmployeeModule } from './employee/employee.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Employee } from './employee/models/employee/employee';
 import { EmployeeDraftModule } from './employee-draft/employee-draft.module';
+import { UploadModule } from './upload/upload.module';
+import { ConfigModule } from '@nestjs/config';
+import { S3Service } from './s3/s3.service';
 
 @Module({
   imports: [SequelizeModule.forRoot({
@@ -19,8 +22,13 @@ import { EmployeeDraftModule } from './employee-draft/employee-draft.module';
     synchronize: false,
   }),
   EmployeeModule,
-  EmployeeDraftModule],
+  UploadModule,
+  EmployeeDraftModule,
+  ConfigModule.forRoot({
+    isGlobal:true,
+  })
+],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,S3Service],
 })
 export class AppModule {}

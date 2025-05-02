@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 const API_URL="http://localhost:3000";
+
+interface Employee {
+    id: number;
+    name: string;
+    department: string;
+    reportingManager: string;
+    files?: string[];
+}
+
 export const saveDraft = async (data:any,draftId?:number) =>{
     console.log("saving in draft")
 
@@ -35,13 +44,28 @@ export const deleteDraft=async(draftId?:number)=>{
     }
 }
 
-export const getEmployees= async()=>{
+export const getEmployees= async(withFiles=false): Promise<Employee[]> =>{
     try{
         const res=await axios.get(`${API_URL}/employee`);
-        return res.data;
+        const employees=res.data;
+        if(!withFiles) return employees;
+
+        const withFilesData=await Promise.all(
+            employees.map(async (emp:any)=>{
+                try{
+                    const fileRes=await axios.get(`${API_URL}/upload/${emp.id}`);
+                    return {...emp,files:fileRes.data.map((f:any)=>f.path)};
+                }
+                catch{
+                    return {...emp,files:[]};
+                }
+            })
+        )
+        return withFilesData;
     }
     catch(error){
         console.error("Error in returing the employees",error);
+        return [];
     }
 }
 

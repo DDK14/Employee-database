@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import {Form,Input,Button, DatePicker, message, DatePickerProps, Card, Descriptions, Modal} from "antd"
+import {Form,Input,Button, DatePicker, message, DatePickerProps, Card, Descriptions, Modal, Upload} from "antd"
 import '@ant-design/v5-patch-for-react-19';
 import { useEffect, useState } from "react";
 import { dbpush, deleteDraft, getDraftsById, getEmployeeById, saveDraft } from "../services/api";
 import dayjs, { Dayjs } from "dayjs";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import FileUpload from "../components/FileUpload";
 
 const formCardStyle = { maxWidth: "500px", margin: "0 auto", padding: "20px", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" };
 const buttonStyle = { margin: "10px" };
@@ -132,6 +133,10 @@ const Form3=({prev, next , form ,data,setData, draft, saveExit}:{prev:any,next:a
                 <Input/>
             </Form.Item>
 
+                <div className="mt-6">
+                    <h3 className="text-lg font-semibold mb-2">Upload Supporting Documents</h3>
+                    <FileUpload employeeId={data.employeeId} />
+                </div>
             <div style={{textAlign:"right"}}>
             <Button type="dashed" onClick={prev} style={buttonStyle}>Back</Button>
             <Button type="primary" onClick={nextPage} style={buttonStyle}>Next</Button>
@@ -202,7 +207,7 @@ const Complete=()=>{
                     })}
                     else if(draftFormId){
                         const draftData=await getDraftsById(Number(draftFormId));
-                        setDraftId(Number(draftData))
+                        setDraftId(Number(draftFormId))
                         setData(draftData)
                         form.setFieldsValue({
                             ...draftData,
@@ -224,6 +229,7 @@ const Complete=()=>{
     const handleExitPrompt= async ()=>{
         Modal.confirm({
             title:'Do you want to save before leaving?',
+            style:{top:20},
             content:'You have unsaved data. Would you like to save it as draft before leaving?',
             okText:'Yes, Save draft',
             cancelText:'No, Exit without Saving',
