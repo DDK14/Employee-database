@@ -133,10 +133,10 @@ const Form3=({prev, next , form ,data,setData, draft, saveExit}:{prev:any,next:a
                 <Input/>
             </Form.Item>
 
-                <div className="mt-6">
+                {/* <div className="mt-6">
                     <h3 className="text-lg font-semibold mb-2">Upload Supporting Documents</h3>
                     <FileUpload employeeId={data.employeeId} />
-                </div>
+                </div> */}
             <div style={{textAlign:"right"}}>
             <Button type="dashed" onClick={prev} style={buttonStyle}>Back</Button>
             <Button type="primary" onClick={nextPage} style={buttonStyle}>Next</Button>
@@ -308,6 +308,12 @@ const Complete=()=>{
                 id:employeeId? Number(employeeId) :undefined
             }
             await dbpush(finalData);
+
+            // if(files && files.length>0){
+            //     const formData=new FormData();
+            //     files.for
+            // }
+
             message.success(employeeId?"Employee details updated successfully" : "Form submitted");
             if(draftId){
                 await deleteDraft(draftId);

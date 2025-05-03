@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react"
 import { getEmployees } from "../services/api";
 import { message } from "antd";
 import { ColumnsType } from "antd/es/table";
+import UploadFile from "../components/FileUpload";
 
 interface Employee{
     id:number;
@@ -19,6 +20,7 @@ const EmployeeList = () =>{
     const[employee,setEmployee]=useState<Employee[]>([]);
     const[loading,setLoading]=useState(false);
     const router=useRouter();
+    const[uploadingEmpId,setUploadingEmpId]=useState<number | null>(null);
     useEffect(()=>{
         const fetchEmployeeById= async()=>{
             setLoading(true);
@@ -41,6 +43,10 @@ const EmployeeList = () =>{
     // const handleEdit=(id:number)=>{
     //     route.push(`/form?id=${id}`)
     // }
+
+    const handleUpload=(id:number)=>{
+        setUploadingEmpId(id);
+    }
     const columns:ColumnsType<Employee>=[
         {title:"Name", dataIndex:"name", key:"name"},
         {title:"Department", dataIndex:"department", key:"department"},
@@ -52,16 +58,20 @@ const EmployeeList = () =>{
                 <div className="flex flex-wrap gap-2">
                     {record.files && record.files.length > 0 ?(
                         record.files.map((file:string,index:number)=>(
+                            
                             <Tag color="blue" key={index}>
                                 <a 
-                                    href={`http://localhost:3000${file}`} 
+                                    href={file} 
+                                    
                                     target="_blank" 
                                     rel="noopener noreferrer"
+                                    download
                                     className="text-blue-600 hover:text-blue-800"
                                 >
                                     {file.split("/").pop()}
                                 </a>
                             </Tag>
+                            
                         ))
                     ):(
                         <span className="text-gray-500">No files uploaded</span>
@@ -73,9 +83,14 @@ const EmployeeList = () =>{
             title:"Actions",
             key:"actions",
             render:(_: any,record: any):React.ReactNode=>{
-                return <Button type="primary" onClick={() => router.push(`/form?id=${record.id}`)}>
-                    Edit
-                </Button>;
+                return (
+                    <div className="flex-gap-2">
+                        <Button type="primary" onClick={() => router.push(`/form?id=${record.id}`)}>
+                            Edit
+                        </Button>
+                        <Button onClick={()=> handleUpload(record.id)}>Upload File</Button>
+                    </div>
+                )
             },
         }
     ];
@@ -98,6 +113,13 @@ const EmployeeList = () =>{
             <Table columns={columns} dataSource={employee} loading={loading} rowKey={"id"}/>
             </div>
             
+            {uploadingEmpId!==null &&(
+                <UploadFile
+                    employeeId={uploadingEmpId}
+                    onClose={()=>setUploadingEmpId(null)}
+                    onSuccess={()=> router.push("/list")}
+                />
+            )}
         </div>
     )
 
