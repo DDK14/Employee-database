@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button, Table, Tag } from "antd";
@@ -21,23 +22,24 @@ const EmployeeList = () =>{
     const[loading,setLoading]=useState(false);
     const router=useRouter();
     const[uploadingEmpId,setUploadingEmpId]=useState<number | null>(null);
-    useEffect(()=>{
-        const fetchEmployeeById= async()=>{
-            setLoading(true);
-            try{
-                console.log("hello")
-                const data=await getEmployees(true);
-                setEmployee(data);
-                console.log("fetching employee data: ",data)
-            }
-            catch(error){
-                message.error('Failed to fetch Employees')
-                console.error("Error fetching employees",error)
-            }
-            finally{
-                setLoading(false);
-            }
+    const fetchEmployeeById= async()=>{
+        setLoading(true);
+        try{
+            console.log("hello")
+            const data=await getEmployees(true);
+            setEmployee(data);
+            console.log("fetching employee data: ",data)
         }
+        catch(error){
+            message.error('Failed to fetch Employees')
+            console.error("Error fetching employees",error)
+        }
+        finally{
+            setLoading(false);
+        }
+    }
+    useEffect(()=>{
+        
         fetchEmployeeById();
     },[])
     // const handleEdit=(id:number)=>{
@@ -46,6 +48,11 @@ const EmployeeList = () =>{
 
     const handleUpload=(id:number)=>{
         setUploadingEmpId(id);
+    }
+    const handleUploadSuccess=async ()=>{
+        await fetchEmployeeById();
+        setUploadingEmpId(null);
+        message.success("Files uploaded successfully")
     }
     const columns:ColumnsType<Employee>=[
         {title:"Name", dataIndex:"name", key:"name"},
@@ -57,22 +64,66 @@ const EmployeeList = () =>{
             render:(_:any,record:Employee) =>(
                 <div className="flex flex-wrap gap-2">
                     {record.files && record.files.length > 0 ?(
-                        record.files.map((file:string,index:number)=>(
+                        record.files.map((file:string,index:number)=>{
+                            const fileName = file.split("/").pop();
+                            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName || "");
+                            const isPDF = /\.pdf$/i.test(fileName || "");
+                            const isVideo = /\.(mp4|webm|ogg)$/i.test(fileName || "");
                             
-                            <Tag color="blue" key={index}>
-                                <a 
-                                    href={file} 
-                                    
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    download
-                                    className="text-blue-600 hover:text-blue-800"
-                                >
-                                    {file.split("/").pop()}
-                                </a>
-                            </Tag>
-                            
-                        ))
+                            return (
+                                <Tag color="blue" key={index} className="flex items-center gap-1">
+                                    {isImage ? (
+                                        <a 
+                                            href={file} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-1"
+                                        >
+                                            <img 
+                                                src={file} 
+                                                alt={fileName} 
+                                                style={{
+                                                    width: 40, 
+                                                    height: 40, 
+                                                    objectFit: "cover", 
+                                                    borderRadius: 4
+                                                }}
+                                            />
+                                            <span className="text-xs">{fileName}</span>
+                                        </a>
+                                    ) : isPDF ? (
+                                        <a 
+                                            href={file} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-1"
+                                        >
+                                            <span className="text-red-500">📄</span>
+                                            <span className="text-xs">{fileName}</span>
+                                        </a>
+                                    ) : isVideo ? (
+                                        <a 
+                                            href={file} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-1"
+                                        >
+                                            <span className="text-blue-500">🎥</span>
+                                            <span className="text-xs">{fileName}</span>
+                                        </a>
+                                    ) : (
+                                        <a 
+                                            href={file} 
+                                            download
+                                            className="flex items-center gap-1"
+                                        >
+                                            <span className="text-gray-500">📎</span>
+                                            <span className="text-xs">{fileName}</span>
+                                        </a>
+                                    )}
+                                </Tag>
+                            );
+                        })
                     ):(
                         <span className="text-gray-500">No files uploaded</span>
                     )}
@@ -117,7 +168,7 @@ const EmployeeList = () =>{
                 <UploadFile
                     employeeId={uploadingEmpId}
                     onClose={()=>setUploadingEmpId(null)}
-                    onSuccess={()=> router.push("/list")}
+                    onSuccess={handleUploadSuccess}
                 />
             )}
         </div>

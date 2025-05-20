@@ -3,18 +3,34 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Employee } from './models/employee/employee';
 import { EmployeeDraft } from '../employee-draft/models/employeeDraft/employeeDraft';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { __Client } from '@aws-sdk/client-s3';
+import { S3Service } from 'src/s3/s3.service';
+
+
 
 @Injectable()
 export class EmployeeService {
   private readonly logger=new Logger(EmployeeService.name);
     constructor(@InjectModel(Employee) private readonly employeeModel:typeof Employee,
                 @InjectModel(EmployeeDraft) private readonly draftModel:typeof EmployeeDraft,
+                private readonly s3Service:S3Service,
               ){}  
 
     //to fetch all employees
     async findAll(){
       this.logger.log('Fetching all employees from db')
-        return this.employeeModel.findAll();
+        const employees=await  this.employeeModel.findAll();
+
+        const employeeFile=await Promise.all(
+          employees.map(async (emp)=>{
+            const files=await this.s3Service.listFiles(emp.id);
+            return{
+              ...emp.get({plain:true}),
+              files,
+            }
+          })
+        )
+        return employeeFile;
     }
 
     //to fetch employee by id
