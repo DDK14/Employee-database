@@ -99,4 +99,9 @@ export class EmployeeService {
       await draft.destroy();
       return emp;
     }
+
+
+    async getFileUrl(key:string){
+      return this.s3Service.getPresignedUrl(key);
+    }
 }

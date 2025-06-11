@@ -53,18 +53,19 @@ export const getEmployees= async(withFiles=false): Promise<Employee[]> =>{
         const withFilesData=await Promise.all(
             employees.map(async (emp:any)=>{
                 try{
-                    const fileRes=await axios.get(`${API_URL}/upload/${emp.id}`);
-                    return {...emp,files:fileRes.data.map((f:any)=>f.path)};
+                    const fileRes=await axios.get(`${API_URL}/employee/${emp.id}/files`);
+                    return {...emp, files: fileRes.data.files || []};
                 }
-                catch{
-                    return {...emp,files:[]};
+                catch(error){
+                    console.error(`Error fetching files for employee ${emp.id}:`, error);
+                    return {...emp, files: []};
                 }
             })
         )
         return withFilesData;
     }
     catch(error){
-        console.error("Error in returing the employees",error);
+        console.error("Error in returning the employees",error);
         return [];
     }
 }

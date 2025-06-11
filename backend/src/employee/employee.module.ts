@@ -7,10 +7,15 @@ import { EmployeeDraftService } from 'src/employee-draft/employee-draft.service'
 import { EmployeeDraftModule } from 'src/employee-draft/employee-draft.module';
 import { EmployeeDraft } from 'src/employee-draft/models/employeeDraft/employeeDraft';
 import { S3Service } from 'src/s3/s3.service';
+import { S3Module } from 'src/s3/s3.module';
 
 @Module({
-  imports:[SequelizeModule.forFeature([Employee,EmployeeDraft]),EmployeeDraftModule],
-  providers: [EmployeeService,EmployeeDraftService,S3Service],
+  imports:[
+    SequelizeModule.forFeature([Employee,EmployeeDraft]),
+    EmployeeDraftModule,
+    S3Module
+  ],
+  providers: [EmployeeService,EmployeeDraftService],
   controllers: [EmployeeController],
   exports:[EmployeeService]
 })

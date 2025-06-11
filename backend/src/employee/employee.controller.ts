@@ -4,11 +4,13 @@ import { Employee } from './models/employee/employee';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { Op, where } from 'sequelize';
 import { EmployeeDraftService } from 'src/employee-draft/employee-draft.service';
+import { S3Service } from 'src/s3/s3.service';
 @Controller('employee')
 export class EmployeeController {
   private readonly logger= new Logger(EmployeeController.name);
     constructor(private readonly employeeService:EmployeeService,
       private readonly employeeDraftService:EmployeeDraftService,
+      private readonly s3Service: S3Service,
     ){}
 
   //   @Post()
@@ -56,4 +58,22 @@ export class EmployeeController {
     this.logger.debug('Final submit to the database')
     return this.employeeService.dbpush(data);
   }
+
+  @Get('file-url')
+  async getFileUrl(@Query('key') key: string) {
+    if (!key) {
+      throw new Error('Key is required');
+    }
+    // Decode the key if it's already encoded
+    const decodedKey = decodeURIComponent(key);
+    const url = await this.employeeService.getFileUrl(decodedKey);
+    return { url };
+  }
+  @Get(':id/files')
+  async getEmployeeFiles(@Param('id') id:number){
+    this.logger.debug(`Fetching files for employee id: ${id}`);
+    const files=await this.s3Service.listFiles(id);
+    return {files};
+  }
+
 }
