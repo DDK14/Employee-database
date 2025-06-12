@@ -1,10 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button, Table, Tag } from "antd";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react"
-import { getEmployees } from "../services/api";
+import { getEmployees, getFilesById } from "../services/api";
 import { message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import UploadFile from "../components/FileUpload";
@@ -25,9 +24,21 @@ const EmployeeList = () =>{
     const fetchEmployeeById= async()=>{
         setLoading(true);
         try{
-            console.log("hello")
+            // console.log("hello")
             const data=await getEmployees(true);
-            setEmployee(data);
+            const employeeWithFiles=await Promise.all(
+                data.map(async (emp:Employee)=>{
+                    try{
+                        const files=await getFilesById(emp.id);
+                        return {...emp,files};
+                    }
+                    catch(err){
+                        console.error("Failed to fetch files", err);
+                        return {...emp,files:[]};
+                    }
+                })
+            )
+            setEmployee(employeeWithFiles);
             console.log("fetching employee data: ",data)
         }
         catch(error){
@@ -42,9 +53,6 @@ const EmployeeList = () =>{
         
         fetchEmployeeById();
     },[])
-    // const handleEdit=(id:number)=>{
-    //     route.push(`/form?id=${id}`)
-    // }
 
     const handleUpload=(id:number)=>{
         setUploadingEmpId(id);
@@ -53,6 +61,22 @@ const EmployeeList = () =>{
         await fetchEmployeeById();
         setUploadingEmpId(null);
         message.success("Files uploaded successfully")
+    }
+
+    //to programtic download files
+    const downloadFile = async (url:string, fileName:string)=>{
+        try{
+            const res=await fetch(url);
+            const blob= await res.blob();
+            const link=document.createElement("a");
+            link.href=URL.createObjectURL(blob);
+            link.download=fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }catch(err){
+            console.error("download Failed", err);
+        }
     }
     const columns:ColumnsType<Employee>=[
         {title:"Name", dataIndex:"name", key:"name"},
@@ -65,62 +89,17 @@ const EmployeeList = () =>{
                 <div className="flex flex-wrap gap-2">
                     {record.files && record.files.length > 0 ?(
                         record.files.map((file:string,index:number)=>{
-                            const fileName = file.split("/").pop();
-                            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName || "");
-                            const isPDF = /\.pdf$/i.test(fileName || "");
-                            const isVideo = /\.(mp4|webm|ogg)$/i.test(fileName || "");
+                            const fileName = file.split("/").pop()?.split("?")[0]|| `file-${index}`;
+                            const decode=decodeURIComponent(fileName);
+
+                            const cleanFileName=decode.replace(/\d{13,}|%[0-9A-F]{2}/gi, "").replace(/\s+/g, " ").trim();
+                            // const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName || "");
+                            // const isPDF = /\.pdf$/i.test(fileName || "");
+                            // const isVideo = /\.(mp4|webm|ogg)$/i.test(fileName || "");
                             
                             return (
-                                <Tag color="blue" key={index} className="flex items-center gap-1">
-                                    {isImage ? (
-                                        <a 
-                                            href={file} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-1"
-                                        >
-                                            <img 
-                                                src={file} 
-                                                alt={fileName} 
-                                                style={{
-                                                    width: 40, 
-                                                    height: 40, 
-                                                    objectFit: "cover", 
-                                                    borderRadius: 4
-                                                }}
-                                            />
-                                            <span className="text-xs">{fileName}</span>
-                                        </a>
-                                    ) : isPDF ? (
-                                        <a 
-                                            href={file} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-1"
-                                        >
-                                            <span className="text-red-500">📄</span>
-                                            <span className="text-xs">{fileName}</span>
-                                        </a>
-                                    ) : isVideo ? (
-                                        <a 
-                                            href={file} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-1"
-                                        >
-                                            <span className="text-blue-500">🎥</span>
-                                            <span className="text-xs">{fileName}</span>
-                                        </a>
-                                    ) : (
-                                        <a 
-                                            href={file} 
-                                            download
-                                            className="flex items-center gap-1"
-                                        >
-                                            <span className="text-gray-500">📎</span>
-                                            <span className="text-xs">{fileName}</span>
-                                        </a>
-                                    )}
+                                <Tag color="blue" key={index} className="cursor-pointer" onClick={() => downloadFile(file,fileName)}>
+                                   📥 {cleanFileName}
                                 </Tag>
                             );
                         })

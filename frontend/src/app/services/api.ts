@@ -98,3 +98,8 @@ export const getDraftsById = async(draftId:number)=>{
         console.error(`error in fetching draft with draftId: ${draftId}`,error);
     }
 }
+
+export const getFilesById = async(id:number)=>{
+    const res= await axios.get(`${API_URL}/files/list/${id}`);
+    return res.data;
+}

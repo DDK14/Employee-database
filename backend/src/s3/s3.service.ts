@@ -2,6 +2,7 @@ import { ListObjectsV2Command, PutObjectCommand, S3Client, GetObjectCommand } fr
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Readable } from 'stream';
 
 @Injectable()
 export class S3Service {
@@ -52,12 +53,21 @@ export class S3Service {
         return presignedUrls;
     }
 
+    async getObjectStream(key:string){
+        const command=new GetObjectCommand({
+            Bucket:this.bucket,
+            Key:key,
+        });
+        const res=await this.s3.send(command)
+        return res.Body as Readable;
+    }
+
     async getPresignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
         const command = new GetObjectCommand({
             Bucket: this.bucket,
             Key: key,
         });
-        
+
         return await getSignedUrl(this.s3, command, { expiresIn });
     }
 
