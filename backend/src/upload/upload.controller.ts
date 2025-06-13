@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Param, Post, Res, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Logger, Param, Post, Res, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { extname, join } from "path";
@@ -37,6 +37,16 @@ export class UploadController{
         }catch(err){
             this.logger.error('Download Failed',err);
             res.status(404).send('File not found');
+        }
+    }
+
+    @Delete('delete/:id')
+    async deleteFile( @Param('id') employeeId:string, @Body() body: {fileUrl:string}){
+        try{
+            await this.s3Service.deleteFileById(body.fileUrl,employeeId);
+            return {message: "File has been successfully deleted"};
+        }catch(err){
+            this.logger.error("Delete failed",err);
         }
     }
 }

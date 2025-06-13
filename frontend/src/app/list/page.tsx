@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { Button, Table, Tag } from "antd";
+import { Button, Modal, Table } from "antd";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react"
-import { getEmployees, getFilesById } from "../services/api";
+import { deleteFileById, getEmployees, getFilesById } from "../services/api";
 import { message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import UploadFile from "../components/FileUpload";
@@ -21,6 +21,7 @@ const EmployeeList = () =>{
     const[loading,setLoading]=useState(false);
     const router=useRouter();
     const[uploadingEmpId,setUploadingEmpId]=useState<number | null>(null);
+    const[previewFile, setPreviewFile]=useState<string| null>(null);
     const fetchEmployeeById= async()=>{
         setLoading(true);
         try{
@@ -54,6 +55,7 @@ const EmployeeList = () =>{
         fetchEmployeeById();
     },[])
 
+    //to upload
     const handleUpload=(id:number)=>{
         setUploadingEmpId(id);
     }
@@ -78,6 +80,28 @@ const EmployeeList = () =>{
             console.error("download Failed", err);
         }
     }
+
+
+
+    //to delete
+    const handleDeleteFile= async (empId:number, fileUrl:string)=>{
+        try{
+            await deleteFileById(empId,fileUrl);
+            message.success("file deleted");
+            fetchEmployeeById();
+        }catch(error){
+            message.error("failed to delete file");
+            console.log(error);
+        }
+    }
+
+
+    //to preview
+    const handlePreview= async(url:string)=>{
+        setPreviewFile(url);
+    }
+
+
     const columns:ColumnsType<Employee>=[
         {title:"Name", dataIndex:"name", key:"name"},
         {title:"Department", dataIndex:"department", key:"department"},
@@ -98,9 +122,13 @@ const EmployeeList = () =>{
                             // const isVideo = /\.(mp4|webm|ogg)$/i.test(fileName || "");
                             
                             return (
-                                <Tag color="blue" key={index} className="cursor-pointer" onClick={() => downloadFile(file,fileName)}>
+                                <div key={index} className="bg-blue-100 text-blue-700 px-2 py-1 rounded cursor-pointer flex gap-2 items-center">
+                                <span onClick={() => downloadFile(file,fileName)}>
                                    📥 {cleanFileName}
-                                </Tag>
+                                </span>
+                                <button onClick={()=> handleDeleteFile(record.id,file)} title="Delete">🗑️</button>
+                                <button onClick={()=> handlePreview(file)} title="Preview">👁️</button>
+                                </div>
                             );
                         })
                     ):(
@@ -150,6 +178,18 @@ const EmployeeList = () =>{
                     onSuccess={handleUploadSuccess}
                 />
             )}
+
+            <Modal open={!!previewFile}
+                onCancel={()=>setPreviewFile(null)}
+                footer={null}
+                width={800} 
+                height={600}
+            >
+                {previewFile && (
+                    <iframe src={previewFile} className="w-full h-full" title="File Preview"></iframe>
+                )}
+                
+            </Modal>
         </div>
     )
 

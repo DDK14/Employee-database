@@ -14,7 +14,7 @@ const UploadFile = ({employeeId,onClose,onSuccess}:Props)=>{
     const uploadProps={
         name:"file",
         multiple:true,
-        action:`http://localhost:3000/upload/${employeeId}`,
+        action:`http://localhost:3000/files/upload/${employeeId}`,
         onChange(info:any){
             if(info.file.status==='done'){
                 message.success(`${info.file.name} file uploaded successfully`);

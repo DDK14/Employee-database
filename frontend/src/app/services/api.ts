@@ -53,7 +53,7 @@ export const getEmployees= async(withFiles=false): Promise<Employee[]> =>{
         const withFilesData=await Promise.all(
             employees.map(async (emp:any)=>{
                 try{
-                    const fileRes=await axios.get(`${API_URL}/upload/${emp.id}`);
+                    const fileRes=await axios.get(`${API_URL}/files/upload/${emp.id}`);
                     return {...emp,files:fileRes.data.map((f:any)=>f.path)};
                 }
                 catch{
@@ -101,5 +101,13 @@ export const getDraftsById = async(draftId:number)=>{
 
 export const getFilesById = async(id:number)=>{
     const res= await axios.get(`${API_URL}/files/list/${id}`);
+    return res.data;
+}
+
+//delete file
+export const deleteFileById = async (empId:number, fileUrl:string)=>{
+    const res=await axios.delete(`${API_URL}/files/delete/${empId}`,{
+        data:{fileUrl},
+    });
     return res.data;
 }

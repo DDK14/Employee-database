@@ -1,4 +1,4 @@
-import { ListObjectsV2Command, PutObjectCommand, S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { ListObjectsV2Command, PutObjectCommand, S3Client, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -71,4 +71,15 @@ export class S3Service {
         return await getSignedUrl(this.s3, command, { expiresIn });
     }
 
+
+    //to delete file
+    async deleteFileById(fileUrl:string, employeeId:string): Promise<void>{
+        const fileKey=decodeURIComponent(new URL(fileUrl).pathname.slice(1));
+        const command=new DeleteObjectCommand({
+            Bucket:this.bucket,
+            Key:fileKey,
+
+        });
+        await this.s3.send(command);
+    }
 }
