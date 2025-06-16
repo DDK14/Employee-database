@@ -44,9 +44,12 @@ export class UploadController{
     async deleteFile( @Param('id') employeeId:string, @Body() body: {fileUrl:string}){
         try{
             await this.s3Service.deleteFileById(body.fileUrl,employeeId);
+            this.logger.log(`File deleted for employee ${employeeId}: ${body.fileUrl}`);
             return {message: "File has been successfully deleted"};
         }catch(err){
             this.logger.error("Delete failed",err);
+            throw err;
+            
         }
     }
 }

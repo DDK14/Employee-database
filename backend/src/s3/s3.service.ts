@@ -74,7 +74,8 @@ export class S3Service {
 
     //to delete file
     async deleteFileById(fileUrl:string, employeeId:string): Promise<void>{
-        const fileKey=decodeURIComponent(new URL(fileUrl).pathname.slice(1));
+        const fullPath=decodeURIComponent(new URL(fileUrl).pathname.slice(1));
+        const fileKey=fullPath.replace(`${this.bucket}/`,'');
         const command=new DeleteObjectCommand({
             Bucket:this.bucket,
             Key:fileKey,

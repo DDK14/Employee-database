@@ -53,8 +53,8 @@ export const getEmployees= async(withFiles=false): Promise<Employee[]> =>{
         const withFilesData=await Promise.all(
             employees.map(async (emp:any)=>{
                 try{
-                    const fileRes=await axios.get(`${API_URL}/files/upload/${emp.id}`);
-                    return {...emp,files:fileRes.data.map((f:any)=>f.path)};
+                    const fileRes=await axios.get(`${API_URL}/files/list/${emp.id}`);
+                    return {...emp,files:fileRes.data};
                 }
                 catch{
                     return {...emp,files:[]};
