@@ -111,3 +111,13 @@ export const deleteFileById = async (empId:number, fileUrl:string)=>{
     });
     return res.data;
 }
+
+export const githubSign = async (email: string) => {
+  try {
+    const res = await axios.post(`${API_URL}/drafts/signin`, { email });
+    return res.data; 
+  } catch (error) {
+    console.error("Error during sign-in API:", error);
+    throw error;
+  }
+};

@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post} from '@nestjs/common';
 import { EmployeeDraftService } from './employee-draft.service';
 
 
@@ -19,5 +19,11 @@ export class EmployeeDraftController {
   @Get(':draftId')
   async findDraftsById(@Param('draftId') draftId:number){
     return this.employeeDraftService.getDraftsById(draftId);
+  }
+
+   @Post('/signin')
+  async signinEmployee(@Body() body: {personalEmail:string}){
+    return await this.employeeDraftService.signinByEmail(body.personalEmail);
+    // return {id:employee.id};
   }
 }
