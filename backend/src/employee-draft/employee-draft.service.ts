@@ -51,16 +51,4 @@ export class EmployeeDraftService {
     // this.logger.log('Fetching all employees from db')
     return this.draftModel.findAll();
   }
-
-  async signinByEmail(personalEmail:string){
-      if(!personalEmail) throw new Error('Email required');
-      let draft=await this.draftModel.findOne({where: {personalEmail}});
-      if(!draft){
-        draft=await this.draftModel.create({personalEmail});
-        // this.logger.log(`Created new draft for ${personalEmail} , ID: ${draft.id}`)
-      }else{
-        // this.logger.log(`Found exsisting draft for ${personalEmail}`)
-      }
-      return {id:draft.id, personalEmail:draft.personalEmail};
-    }
 }

@@ -99,7 +99,4 @@ export class EmployeeService {
       await draft.destroy();
       return emp;
     }
-
-
-    
 }

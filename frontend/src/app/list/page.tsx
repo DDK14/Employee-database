@@ -183,10 +183,7 @@ const EmployeeList = () =>{
                 onCancel={()=>setPreviewFile(null)}
                 footer={null}
                 width={800} 
-                styles={{
-                    body:{ height:'80vh', padding:0},
-                }}
-                centered
+                height={600}
             >
                 {previewFile && (
                     <iframe src={previewFile} className="w-full h-full" title="File Preview"></iframe>

@@ -56,8 +56,4 @@ export class EmployeeController {
     this.logger.debug('Final submit to the database')
     return this.employeeService.dbpush(data);
   }
-
-
-
- 
 }
